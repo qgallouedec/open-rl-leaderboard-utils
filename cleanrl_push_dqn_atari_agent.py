@@ -64,7 +64,7 @@ if __name__ == "__main__":
     dummy_input = torch.from_numpy(np.random.rand(1, 4, 84, 84).astype(np.float32))
     traced_agent = jit.trace(agent.eval(), dummy_input, check_trace=False)
     frozen_agent = jit.freeze(traced_agent)
-    frozen_agent = jit.optimize_for_inference(frozen_agent)
+    # frozen_agent = jit.optimize_for_inference(frozen_agent)  #Avoid jit error value not defined
 
     with tempfile.NamedTemporaryFile() as tmp:
         jit.save(frozen_agent, tmp)
