@@ -15,3 +15,12 @@ python sb3_push_agent.py --repo_id username/model_id
 pip install cleanrl
 python cleanrl_push_agent.py --repo_id username/model_id
 ```
+
+## Sample Factory
+
+### Atari
+
+```bash
+pip install sample_factory gymnasium[accept-rom-license,atari]
+python sf_push_agent_atari.py --repo_id username/model_id
+```
