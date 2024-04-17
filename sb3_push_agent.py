@@ -204,7 +204,7 @@ def download_from_hub(
         zip_ref.extractall(log_path)
 
 
-def make_and_upload_agent(repo_id):
+def make_and_upload_agent(args):
     with tempfile.TemporaryDirectory() as temp_dir:
         # Going through custom gym packages to let them register in the global registory
         for env_module in args.gym_packages:
@@ -212,7 +212,7 @@ def make_and_upload_agent(repo_id):
 
         env_name: EnvironmentName = args.env
         algo = args.algo
-        user_id, model_id = repo_id.split("/")
+        user_id, model_id = args.repo_id.split("/")
 
         try:
             _, model_path, log_path = get_model_path(
@@ -325,7 +325,7 @@ def make_and_upload_agent(repo_id):
         commit = CommitOperationAdd(path_in_repo="agent.pt", path_or_fileobj=f"{temp_dir}/agent.pt")
         commits.append(commit)
 
-        card = RepoCard.load(repo_id)
+        card = RepoCard.load(args.repo_id)
         env_id = maybe_upgrade_env(args.env)
         if env_id not in card.data.tags:
             card.data.tags.append(env_id)
@@ -334,15 +334,15 @@ def make_and_upload_agent(repo_id):
             commits.append(commit)
 
         API.create_commit(
-            repo_id=repo_id,
+            repo_id=args.repo_id,
             operations=commits,
             commit_message="Add `agent.pt` and tag the environment",
             commit_description="This commit adds a model that is compatible with the 🥇 [Open RL Leaderboard](https://huggingface.co/spaces/open-rl-leaderboard/leaderboard) 🥇.",
             repo_type="model",
-            # create_pr=True,
+            create_pr=True,
         )
 
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    make_and_upload_agent(args.repo_id)
+    make_and_upload_agent(args)
