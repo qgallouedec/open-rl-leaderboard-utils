@@ -2,10 +2,17 @@
 
 Utilities for pushing agents to the OpenRL Leaderboard.
 
+## Demo
+
+```bash
+pip install torch huggingface-hub gymnasium
+python demo.py --hf_user my_username
+```
+
 ## Stable-Baselines3
 
 ```bash
-pip install stable-baselines3 sb3-contrib huggingface-hub gym==0.21 shimmy>=0.2.1
+pip install stable-baselines3 rl-zoo3 huggingface_sb3 gym==0.21 shimmy>=0.2.1
 python sb3_push_agent.py --repo_id username/model_id
 ```
 
