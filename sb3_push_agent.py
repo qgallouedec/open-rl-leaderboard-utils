@@ -151,7 +151,6 @@ def download_from_hub(
     print(f"Downloading from https://huggingface.co/{repo_id}")
 
     checkpoint = load_from_hub(repo_id, model_name.filename)
-    config_path = load_from_hub(repo_id, "config.yml")
 
     # If VecNormalize, download
     try:
@@ -159,10 +158,6 @@ def download_from_hub(
     except HTTPError:
         print("No normalization file")
         vec_normalize_stats = None
-
-    saved_args = load_from_hub(repo_id, "args.yml")
-    env_kwargs = load_from_hub(repo_id, "env_kwargs.yml")
-    train_eval_metrics = load_from_hub(repo_id, "train_eval_metrics.zip")
 
     if exp_id == 0:
         exp_id = get_latest_run_id(os.path.join(folder, algo), env_name) + 1
@@ -193,15 +188,8 @@ def download_from_hub(
 
     # Copy config files and saved stats
     shutil.copy(checkpoint, os.path.join(log_path, f"{env_name}.zip"))
-    shutil.copy(saved_args, os.path.join(config_folder, "args.yml"))
-    shutil.copy(config_path, os.path.join(config_folder, "config.yml"))
-    shutil.copy(env_kwargs, os.path.join(config_folder, "env_kwargs.yml"))
     if vec_normalize_stats is not None:
         shutil.copy(vec_normalize_stats, os.path.join(config_folder, "vecnormalize.pkl"))
-
-    # Extract monitor file and evaluation file
-    with zipfile.ZipFile(train_eval_metrics, "r") as zip_ref:
-        zip_ref.extractall(log_path)
 
 
 def make_and_upload_agent(args):
@@ -225,13 +213,6 @@ def make_and_upload_agent(args):
                 args.load_last_checkpoint,
             )
         except (AssertionError, ValueError) as e:
-            # Special case for rl-trained agents
-            # auto-download from the hub
-            # if "rl-trained-agents" not in temp_dir:
-            #     raise e
-            # else:
-            print("Pretrained model not found, trying to download it from sb3 Huggingface hub: https://huggingface.co/sb3")
-            # Auto-download
             download_from_hub(
                 algo=algo,
                 env_name=env_name,
